@@ -6,17 +6,21 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.web.server.ServerHttpSecurity;
 import org.springframework.security.web.server.SecurityWebFilterChain;
 import org.springframework.web.reactive.function.client.WebClient;
+import reactor.core.publisher.Mono;
 
 @Configuration
 public class SecurityConfig {
 
     @Bean
-    public SecurityWebFilterChain securityWebFilterChain(ServerHttpSecurity http, OAuth2ResourceServerProperties oAuth2ResourceServerProperties) {
+    public SecurityWebFilterChain securityWebFilterChain(ServerHttpSecurity http,
+                                                         OAuth2ResourceServerProperties oAuth2ResourceServerProperties,
+                                                         CustomJwtAuthenticationConverter converter) {
         http.authorizeExchange()
                 .anyExchange().authenticated()
                 .and()
                 .oauth2ResourceServer().jwt()
-                .jwkSetUri(oAuth2ResourceServerProperties.getJwt().getJwkSetUri());
+                .jwkSetUri(oAuth2ResourceServerProperties.getJwt().getJwkSetUri())
+                .jwtAuthenticationConverter(jwt -> Mono.just(converter.convert(jwt)));
         return http.build();
     }
 

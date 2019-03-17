@@ -29,4 +29,5 @@ public class ReactiveService {
                 .flatMap(responses -> this.webClient.get().exchange()
                         .flatMap(r -> r.bodyToMono(Map.class).flatMap(b -> Mono.just(responses))));
     }
+    //Response.builder().name(SecurityContextHolder.getContext().getAuthentication().getName()).build()
 }
